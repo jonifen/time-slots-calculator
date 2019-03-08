@@ -1,24 +1,29 @@
 import TimeSlotsCalculator from '../src/time-slots-calculator';
 
-describe('time slots calculator', () => {
-  it('should get time slots for "default" day', () => {
-    const checkDate = new Date('2019-03-08');
-    let calc = new TimeSlotsCalculator(checkDate);
-    let hours = calc.checkDate();
-    expect(hours).toEqual({open: 9, close: 20});
+describe('Time Slots Calculator', () => {
+  it('Can create new instance of TimeSlotsCalculator', () => {
+    const calc = new TimeSlotsCalculator();
+    expect(calc).toBeDefined();
   });
 
-  it('should get time slots for "Saturday" day', () => {
-    const checkDate = new Date('2019-03-09');
-    let calc = new TimeSlotsCalculator(checkDate);
-    let hours = calc.checkDate();
-    expect(hours).toEqual({open: 9, close: 18});
+  it('Should return 42x 15min slots (covering 9:15-19:45) when opening hours are 09:00-20:00', () => {
+    const calc = new TimeSlotsCalculator();
+    let hours = { open: 9, closed: 20 };
+    let timeslots = calc.getTimeSlotsInOpeningHours(hours, 15);
+    expect(timeslots.length).toBe(42);
   });
 
-  it('should get time slots for "2019-04-19" day', () => {
-    const checkDate = new Date('2019-04-19');
-    let calc = new TimeSlotsCalculator(checkDate);
-    let hours = calc.checkDate();
-    expect(hours).toEqual({open: 10, close: 18});
+  it('Should return 20x 30min slots (covering 9:30-19:30) when opening hours are 09:00-20:00', () => {
+    const calc = new TimeSlotsCalculator();
+    let hours = { open: 9, closed: 20 };
+    let timeslots = calc.getTimeSlotsInOpeningHours(hours, 30);
+    expect(timeslots.length).toBe(20);
+  });
+
+  it('Should return 9x 60min slots (covering 10:00-19:00) when opening hours are 09:00-20:00', () => {
+    const calc = new TimeSlotsCalculator();
+    let hours = { open: 9, closed: 20 };
+    let timeslots = calc.getTimeSlotsInOpeningHours(hours, 60);
+    expect(timeslots.length).toBe(9);
   });
 });

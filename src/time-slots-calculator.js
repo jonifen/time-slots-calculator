@@ -1,44 +1,29 @@
-import OpeningHours from './opening-hours.json';
-
 export default class TimeSlotsCalculator {
-  constructor(date) {
-    this._date = date;
+  getTimeSlotsInOpeningHours(hours, slotLengthMins) {
+    if (!hours)
+      return [];
 
-    this._getDayFromDate = this._getDayFromDate.bind(this);
-    this._checkForPublicHoliday = this._checkForPublicHoliday.bind(this);
-  }
+    let totalHoursOpen = (hours["closed"] - hours["open"]);
+    let slotsPerHour = 60 / slotLengthMins;
+    let totalSlots = totalHoursOpen * slotsPerHour;
+    let totalSlotsAvailable = totalSlots - 2;
+    let slots = [];
+    let openTime = new Date(2020, 1, 1, hours["open"]);
 
-  _getDayFromDate() {
-    const daysOfWeek = ["Sunday", "default", "default", "default", "default", "default", "Saturday"];
-    return daysOfWeek[this._date.getDay()];
-  }
-
-  _checkForPublicHoliday() {
-    const isoDate = this._date.toISOString().split('T')[0];
-    let holidays = OpeningHours["holidays"].map((holiday) => {
-      if (holiday["date"] === isoDate)
-        return holiday["hours"];
-    });
-
-    if (holidays)
-      return holidays[0];
-
-    return;
-  }
-
-  checkDate() {
-    let openingHours = this._checkForPublicHoliday();
-    if (!openingHours) {
-      let dayOfWeek = this._getDayFromDate();
-      if (dayOfWeek === "default")
-        openingHours = OpeningHours["default"];
-      else
-        openingHours = OpeningHours["days"].map((day) => {
-          if (day["dayOfWeek"] === dayOfWeek)
-            return day["hours"];
-        })[0];
+    for (let slot = 1; slot <= totalSlotsAvailable; slot++) {
+      let startSlotTime = new Date(openTime.getTime() + ((slotLengthMins * slot) * 60000));
+      let endSlotTime = new Date(startSlotTime.getTime() + (slotLengthMins * 60000));
+      slots.push(`${this._getFormattedTime(startSlotTime)}-${this._getFormattedTime(endSlotTime)}`);
     }
 
-    return openingHours;
+    return slots;
+  }
+
+  _getFormattedTime(time) {
+    return `${this._padLeft(time.getHours())}:${this._padLeft(time.getMinutes())}`;
+  }
+
+  _padLeft(element) {
+    return ("0" + element).slice(-2);
   }
 }
