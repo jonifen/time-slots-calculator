@@ -21,4 +21,11 @@ describe('Opening Hours Adapter', () => {
     let hours = calc.checkDate();
     expect(hours).toEqual({open: 10, close: 18});
   });
+
+  it('should get opening hours for "2019-12-25" day', () => {
+    const checkDate = new Date('2019-12-25');
+    let calc = new OpeningHoursAdapter(checkDate);
+    let hours = calc.checkDate();
+    expect(hours).toEqual({closed: true});
+  });
 });

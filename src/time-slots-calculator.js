@@ -1,9 +1,14 @@
+import OpeningHoursAdapter from './opening-hours-adapter';
+
 export default class TimeSlotsCalculator {
   getTimeSlotsInOpeningHours(hours, slotLengthMins) {
     if (!hours)
       return [];
 
-    let totalHoursOpen = (hours["closed"] - hours["open"]);
+    if (hours["closed"] === true)
+      return [];
+
+    let totalHoursOpen = (hours["close"] - hours["open"]);
     let slotsPerHour = 60 / slotLengthMins;
     let totalSlots = totalHoursOpen * slotsPerHour;
     let totalSlotsAvailable = totalSlots - 2;
@@ -17,6 +22,12 @@ export default class TimeSlotsCalculator {
     }
 
     return slots;
+  }
+
+  getTimeSlotsForDate(date, slotLengthMins) {
+    let openingHoursAdapter = new OpeningHoursAdapter(date);
+    let hours = openingHoursAdapter.checkDate();
+    return this.getTimeSlotsInOpeningHours(hours, slotLengthMins);
   }
 
   _getFormattedTime(time) {

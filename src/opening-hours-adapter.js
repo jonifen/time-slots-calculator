@@ -15,13 +15,13 @@ export default class OpeningHoursAdapter {
 
   _checkForPublicHoliday() {
     const isoDate = this._date.toISOString().split('T')[0];
-    let holidays = OpeningHours["holidays"].map((holiday) => {
+    let holidays = OpeningHours["holidays"].filter((holiday) => {
       if (holiday["date"] === isoDate)
-        return holiday["hours"];
+        return holiday;
     });
 
-    if (holidays)
-      return holidays[0];
+    if (holidays.length > 0)
+      return holidays[0]["hours"];
 
     return;
   }
