@@ -1,20 +1,42 @@
 import OpeningHours from './opening-hours.json';
 
 export default class OpeningHoursAdapter {
-  constructor(date) {
-    this._date = date;
+  constructor(url) {
+    this._url = url;
 
     this._getDayFromDate = this._getDayFromDate.bind(this);
     this._checkForPublicHoliday = this._checkForPublicHoliday.bind(this);
   }
 
-  _getDayFromDate() {
-    const daysOfWeek = ["Sunday", "default", "default", "default", "default", "default", "Saturday"];
-    return daysOfWeek[this._date.getDay()];
+  _fetchOpeningHours(url) {
+    return new Promise((resolve, reject) => {
+      let xhr = new XMLHttpRequest();
+      xhr.open("GET", url);
+
+      xhr.onload = () => {
+        if (xhr.status >= 200 && xhr.status < 300)
+          resolve(xhr.response);
+        else
+          reject(`Status code ${xhr.status} returned from opening hours request`);
+      }
+
+      xhr.onerror = () => {
+        reject("Error returning opening hours");
+      }
+
+      xhr.setRequestHeader("Content-Type", "application/json");
+      xhr.setRequestHeader("Accept", "application/json");
+      xhr.send();
+    });
   }
 
-  _checkForPublicHoliday() {
-    const isoDate = this._date.toISOString().split('T')[0];
+  _getDayFromDate(date) {
+    const daysOfWeek = ["Sunday", "default", "default", "default", "default", "default", "Saturday"];
+    return daysOfWeek[date.getDay()];
+  }
+
+  _checkForPublicHoliday(date) {
+    const isoDate = date.toISOString().split('T')[0];
     let holidays = OpeningHours["holidays"].filter((holiday) => {
       if (holiday["date"] === isoDate)
         return holiday;
@@ -26,10 +48,10 @@ export default class OpeningHoursAdapter {
     return;
   }
 
-  checkDate() {
-    let openingHours = this._checkForPublicHoliday();
+  checkDate(date) {
+    let openingHours = this._checkForPublicHoliday(date);
     if (!openingHours) {
-      let dayOfWeek = this._getDayFromDate();
+      let dayOfWeek = this._getDayFromDate(date);
       if (dayOfWeek === "default")
         openingHours = OpeningHours["default"];
       else

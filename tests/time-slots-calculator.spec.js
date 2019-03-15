@@ -29,13 +29,13 @@ describe('Time Slots Calculator', () => {
 
   it('Should return 14x 30min slots (covering 10:30-17:30) for 19/04/19 when opening hours are 10:00-18:00', () => {
     const calc = new TimeSlotsCalculator();
-    let timeslots = calc.getTimeSlotsForDate(new Date('2019-04-19'), 30);
+    let timeslots = calc.getTimeSlotsForDate(new Date('2019-04-19'), 30, '../src/opening-hours.json');
     expect(timeslots.length).toBe(14);
   });
 
   it('Should return 0x 30min slots for Christmas Day as we are closed', () => {
     const calc = new TimeSlotsCalculator();
-    let timeslots = calc.getTimeSlotsForDate(new Date('2019-12-25'), 30);
+    let timeslots = calc.getTimeSlotsForDate(new Date('2019-12-25'), 30, '../src/opening-hours.json');
     expect(timeslots.length).toBe(0);
   });
 });

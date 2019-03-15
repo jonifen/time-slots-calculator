@@ -24,9 +24,9 @@ export default class TimeSlotsCalculator {
     return slots;
   }
 
-  getTimeSlotsForDate(date, slotLengthMins) {
-    let openingHoursAdapter = new OpeningHoursAdapter(date);
-    let hours = openingHoursAdapter.checkDate();
+  getTimeSlotsForDate(date, slotLengthMins, openingTimesUrl) {
+    let openingHoursAdapter = new OpeningHoursAdapter(openingTimesUrl);
+    let hours = openingHoursAdapter.checkDate(date);
     return this.getTimeSlotsInOpeningHours(hours, slotLengthMins);
   }
 
